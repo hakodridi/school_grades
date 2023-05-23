@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:paddingVertical="20dp"
+    android:paddingHorizontal="10dp">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:fontFamily="@font/semi_bold"
+            android:text="Add a Faculty"
+            android:textColor="@color/dark_grey"
+            android:textSize="17sp"
+            android:layout_marginVertical="20dp"
+            android:gravity="center"/>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColorHint="@color/dark_grey"
+            app:counterTextColor="@color/dark_grey"
+            app:boxStrokeColor="@color/black"
+            app:boxStrokeWidth="2dp"
+            app:boxCollapsedPaddingTop="0dp"
+            app:boxBackgroundColor="@color/white"
+            android:layout_marginHorizontal="20dp"
+            android:hint="@string/name"
+            app:hintTextColor="@color/black">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/input_text"
+                android:textSize="15dp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/medium"
+                android:paddingStart="0dp"
+                android:inputType="text"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/numberLayout"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColorHint="@color/dark_grey"
+            app:counterTextColor="@color/dark_grey"
+            app:boxStrokeColor="@color/black"
+            app:boxStrokeWidth="2dp"
+            app:boxCollapsedPaddingTop="0dp"
+            app:boxBackgroundColor="@color/white"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="20dp"
+            android:hint="@string/number_of_groups"
+            app:hintTextColor="@color/black">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/input_number"
+                android:textSize="15dp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/medium"
+                android:paddingStart="0dp"
+                android:inputType="numberSigned"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <LinearLayout
+            android:id="@+id/check_tp_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="30dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:visibility="gone"
+            >
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@color/dark_grey"
+                android:text="There is a TP in this module"/>
+            <CheckBox
+                android:id="@+id/check_tp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="60dp"
+            >
+            <TextView
+                android:id="@+id/cancelBtn"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="@string/cancel"
+                android:gravity="center"
+                android:paddingVertical="7dp"
+                android:textSize="15sp"
+                android:textColor="@color/white"
+                android:background="@drawable/radius_10"
+                android:backgroundTint="@color/hint_grey"
+                />
+            <View
+                android:layout_width="10dp"
+                android:layout_height="10dp"/>
+            <TextView
+                android:id="@+id/confirmBtn"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="@string/add"
+                android:gravity="center"
+                android:paddingVertical="7dp"
+                android:textSize="15sp"
+                android:textColor="@color/white"
+                android:background="@drawable/radius_10"
+                android:backgroundTint="@color/aqua_dark"
+                />
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+</RelativeLayout>

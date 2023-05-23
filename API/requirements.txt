@@ -1,0 +1,6 @@
+fastapi
+pydantic
+firebase-admin
+pandas==2.0.1
+openpyxl==3.1.2
+python-multipart

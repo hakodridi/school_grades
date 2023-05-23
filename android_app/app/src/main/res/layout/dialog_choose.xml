@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:paddingVertical="20dp"
+    android:paddingHorizontal="10dp">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:fontFamily="@font/medium"
+            android:text="What You want to display ?"
+            android:textColor="@color/dark_grey"
+            android:textSize="17sp"
+            android:layout_marginVertical="20dp"
+            android:gravity="center"/>
+
+        <TextView
+            android:id="@+id/modulesChoice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Modules"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:paddingVertical="15dp"
+            android:background="@drawable/selector"
+            android:textColor="@color/color_selector"
+            />
+        <TextView
+            android:id="@+id/groupsChoice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Groups"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:paddingVertical="15dp"
+            android:background="@drawable/selector"
+            android:layout_marginTop="20dp"
+            android:textColor="@color/color_selector"
+            />
+
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="60dp"
+            >
+            <TextView
+                android:id="@+id/cancelBtn"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="@string/cancel"
+                android:gravity="center"
+                android:paddingVertical="7dp"
+                android:textSize="15sp"
+                android:textColor="@color/white"
+                android:background="@drawable/radius_10"
+                android:backgroundTint="@color/hint_grey"
+                />
+            <View
+                android:layout_width="10dp"
+                android:layout_height="10dp"/>
+            <TextView
+                android:id="@+id/confirmBtn"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="@string/confirm"
+                android:gravity="center"
+                android:paddingVertical="7dp"
+                android:textSize="15sp"
+                android:textColor="@color/white"
+                android:background="@drawable/radius_10"
+                android:backgroundTint="@color/aqua_dark"
+                />
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+</RelativeLayout>

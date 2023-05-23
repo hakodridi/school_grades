@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1037813109509",
+    "project_id": "affichage-2d87a",
+    "storage_bucket": "affichage-2d87a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1037813109509:android:bd33cfe916e4373f995d6c",
+        "android_client_info": {
+          "package_name": "com.codz.okah.school_grades"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1037813109509-54fqt22c4lkomlo11on8aboft5t9p0os.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBEgi1HI7pV97a3tWk75BxZlhwnh2XUhlE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1037813109509-54fqt22c4lkomlo11on8aboft5t9p0os.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

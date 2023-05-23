@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name" translatable="false">School grades</string>
+    <string name="login" translatable="false">Login</string>
+    <string name="your_id" translatable="false">Your id</string>
+    <string name="password" translatable="false">Password</string>
+    <string name="forgot" translatable="false">Forgot?</string>
+    <string name="name" translatable="false">Name</string>
+    <string name="add" translatable="false">Add</string>
+    <string name="cancel" translatable="false">Cancel</string>
+    <string name="number_of_groups" translatable="false">Number of groups</string>
+    <string name="confirm" translatable="false">Confirm</string>
+
+
+    <string name="open" translatable="false">Open navigation drawer</string>
+    <string name="close" translatable="false">Close navigation drawer</string>
+    <string name="spinner_hint" translatable="false">Select a choice</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
+</resources>

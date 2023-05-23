@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="aqua_reg">#66BFBF</color>
+    <color name="aqua_dark">#FF018786</color>
+    <color name="light_blue">#EAF6F6</color>
+    <color name="red">#FF0063</color>
+    <color name="orange">#FF9800</color>
+    <color name="trasparent">#0000</color>
+
+    <color name="dark_grey">#37474F</color>
+    <color name="hint_grey">#B837474F</color>
+
+    <color name="black">#000</color>
+    <color name="white">#FFF</color>
+
+
+</resources>

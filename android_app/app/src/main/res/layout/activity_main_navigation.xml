@@ -36,7 +36,45 @@
         android:layout_height="match_parent"
         app:headerLayout="@layout/menu_header"
         app:menu="@menu/main_menu"
-        android:layout_gravity="start"/>
+        android:layout_gravity="start">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:id="@+id/logoutBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:background="#FF5722">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_alignParentBottom="true"
+                    android:padding="20dp"
+                    >
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_logout"
+                        app:tint="@color/white"
+                        android:layout_marginRight="20dp"
+                        />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="17dp"
+                        android:textColor="@color/white"
+                        android:fontFamily="@font/medium"
+                        android:text="Logout"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+    </com.google.android.material.navigation.NavigationView>
 
     <RelativeLayout
         android:id="@+id/progress"

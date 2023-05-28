@@ -35,6 +35,11 @@
             android:iconTint="@color/hint_grey"
             android:title="Students"/>
 
+        <item android:id="@+id/menu_grades"
+            android:icon="@drawable/ic_list"
+            android:iconTint="@color/hint_grey"
+            android:title="Grades"/>
+
 
     </group>
 

@@ -112,6 +112,7 @@
 
                     </com.google.android.material.textfield.TextInputLayout>
                     <TextView
+                        android:id="@+id/forgot"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/forgot"
@@ -144,5 +145,19 @@
             android:layout_height="0dp"
             android:layout_weight="2"/>
     </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/progress"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/hint_grey"
+        android:visibility="gone"
+        >
+        <ProgressBar
+            style="@style/CustomProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"/>
+    </RelativeLayout>
 
 </RelativeLayout>

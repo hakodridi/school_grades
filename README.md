@@ -14,7 +14,7 @@ This guide will walk you through the steps to set up a FastAPI project using a v
 
 Clone the repository containing your FastAPI project:
 ```Shell
-$ git clone <repository_url>
+$ git clone https://github.com/hakodridi/school_grades.git
 $ cd <repository_directory>
 ```
 

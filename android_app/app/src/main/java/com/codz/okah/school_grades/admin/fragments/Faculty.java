@@ -12,15 +12,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.codz.okah.school_grades.R;
+import com.codz.okah.school_grades.adapters.SpinnerAdapter;
 import com.codz.okah.school_grades.adapters.StandardAdapter;
 import com.codz.okah.school_grades.listener.Progress;
 import com.codz.okah.school_grades.listener.StandardListener;
 import com.codz.okah.school_grades.tools.Const;
 import com.codz.okah.school_grades.tools.Item;
+import com.codz.okah.school_grades.tools.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
@@ -31,6 +35,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -57,6 +62,7 @@ public class Faculty extends Fragment {
     ArrayList<Item> items;
     DatabaseReference reference;
 
+    ArrayList<User> profs;
     public Faculty(Progress progress) {
         // Required empty public constructor
         this.progress = progress;
@@ -102,7 +108,7 @@ public class Faculty extends Fragment {
         adapter = new StandardAdapter(items, Const.FAC, getContext(), new StandardListener() {
             @Override
             public void onClick(int position) {
-
+                loadDeparts(position);
             }
 
             @Override
@@ -126,6 +132,181 @@ public class Faculty extends Fragment {
         });
 
         return mainView;
+    }
+
+    private void loadDeparts(int position) {
+        progress.showProgress();
+        reference.child("struct/departs/"+items.get(position).getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                ArrayList<String> departs = new ArrayList<>();
+                for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+                    departs.add(childSnapshot.getKey());
+                }
+
+                loadProfs(position, departs);
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                progress.hideProgress();
+                Log.e("EXP_ERR", "onCancelled: "+databaseError.getMessage()+"\n"+databaseError.getDetails() );
+                // Handle database error
+            }
+        });
+    }
+
+    private void loadProfs(int position, ArrayList<String> departs) {
+        progress.showProgress();
+        reference.child("users/profs").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshots) {
+                profs = new ArrayList<>();
+                ArrayList<String> profList = new ArrayList<>();
+                for (DataSnapshot snapshot : snapshots.getChildren()){
+                    if(departs.contains(snapshot.getKey()))for (DataSnapshot s: snapshot.getChildren()){
+                        User u = new User(
+                                s.child("username").getValue(String.class),
+                                s.child("user_type").getValue(Integer.class),
+                                s.child("fullname").getValue(String.class),
+                                s.child("depart_key").getValue(String.class)
+                        );
+                        u.setKey(s.getKey());
+                        profs.add(u);
+                        profList.add(u.getFullName());
+                    }
+
+                }
+                openDialogSelectProf(position, profList);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void openDialogSelectProf(int position, ArrayList<String> profList) {
+        progress.hideProgress();
+        if(profs.isEmpty()){
+            Toast.makeText(getContext(), "There no profs in this fac", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
+
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_select_prof, null);
+        dialogBuilder.setView(dialogView);
+
+        AlertDialog alertDialog = dialogBuilder.create();
+
+        ArrayAdapter profAdapter;
+        Spinner profSpinner;
+        ArrayList<String> list = new ArrayList<>();
+        profSpinner = dialogView.findViewById(R.id.prof_spinner);
+        list.add("Select a choice");
+        list.addAll(profList);
+
+        profAdapter = new SpinnerAdapter(
+                getContext(),
+                R.layout.spinner_item,
+                list.toArray(new String[list.size()])){
+            @Override
+            public boolean isEnabled(int position) {
+                // Disable the hint item
+                return position != 0;
+            }
+        };
+        profSpinner.setAdapter(profAdapter);
+        profSpinner.setSelection(0);
+        if(!items.get(position).getProfID().isEmpty()){
+            profSpinner.setSelection(getProfPosition(position));
+        }
+
+        dialogView.findViewById(R.id.confirm_prof_btn).setOnClickListener(v -> {
+            if(profSpinner.getSelectedItemPosition()<1){
+                Toast.makeText(getContext(), "Selecet a choice", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            putProfToFac(position, profs.get(profSpinner.getSelectedItemPosition()-1), alertDialog);
+        });
+
+
+        alertDialog.show();
+    }
+
+    private void putProfToFac(int position, User prof, AlertDialog alertDialog) {
+
+
+        reference.child("users/profs")
+                .child(prof.getDepartKey())
+                .child(prof.getKey())
+                .child("user_type").setValue(Const.ADMIN_FAC);
+
+        reference.child("users/data")
+                .child(prof.getKey())
+                .child("user_type").setValue(Const.ADMIN_FAC);
+
+
+
+        reference.child("role_fac")
+                .child("profs")
+                .child(prof.getKey())
+                .setValue(items.get(position).getKey());
+
+        reference.child("role_depart")
+                .child("profs")
+                .child(prof.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        try{
+                            String departKey = snapshot.getValue(String.class);
+                            if (!departKey.isEmpty()){
+                                reference.child("role_depart")
+                                        .child("departs")
+                                        .child(departKey).removeValue();;
+
+                                reference.child("role_depart")
+                                        .child("profs")
+                                        .child(prof.getKey()).removeValue();
+                            }
+                        }catch (Exception e){
+
+                        }
+
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
+
+        reference.child("role_fac")
+                .child("facs")
+                .child(items.get(position).getKey())
+                .setValue(prof.getKey());
+
+        progress.hideProgress();
+        alertDialog.dismiss();
+
+
+
+    }
+
+    private int getProfPosition(int itemPosition) {
+        for (int i = 0; i < profs.size(); i++) {
+            if(profs.get(i).getKey().equals(items.get(itemPosition).getProfID())){
+                return i+1;
+            }
+        }
+        return 0;
     }
 
 

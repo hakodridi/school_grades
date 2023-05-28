@@ -7,6 +7,9 @@ public class Item {
     private boolean hasTP;
     private String profID;
 
+    public Item(){
+
+    }
     public Item(String key, String value) {
         this.key = key;
         this.value = value;

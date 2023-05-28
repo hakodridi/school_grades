@@ -23,6 +23,7 @@ class UserCreate(BaseModel):
     password: str
     user_type: int
     depart_key: str
+    speciality_key: str
     section_key: str
     group: int
 
@@ -85,16 +86,19 @@ def create_student(user: UserCreate):
             'user_type': user.user_type,
             'depart_key': user.depart_key,
             'section_key': user.section_key,
+            'speciality_key': user.speciality_key,
             'group': user.group
         }
         db.reference('users/students').child(user.depart_key).child(user.section_key).child(str(user.group)).child(userAuth.uid).set(user_data)
         db.reference('users/data').child(userAuth.uid).set(user_data)
-        return {"message": "User created successfully", "error":0}
+        return {"message": "User created successfully", "error":""}
     except ValueError as e:
-        return {"message": "Failed to create user", "error":1}
+        print(f"error : {e}")
+        return {"error": f"Failed to create user\n{e}", "message":""}
 
     except firebase_exceptions.FirebaseError as e:
-        return {"message": "Failed to save user data", "error":2}
+        print(f"error_2 : {e}")
+        return {"error": f"Failed to save user data\n{e}", "message":""}
     
 
 @app.post("/create_prof")

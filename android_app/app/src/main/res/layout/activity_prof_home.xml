@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Home">
+    tools:context=".admin.ProfHome">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -112,10 +112,72 @@
                             android:layout_height="match_parent"
                             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                             />
+                        <LinearLayout
+                            android:id="@+id/edit_grades_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:visibility="gone"
+                            android:background="@color/white"
+                            >
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/editListView"
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                android:layout_weight="1"
+                                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                                />
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_margin="20dp"
+                                >
+                                <TextView
+                                    android:id="@+id/cancelEditBtn"
+                                    android:layout_width="0dp"
+                                    android:layout_weight="1"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/cancel"
+                                    android:gravity="center"
+                                    android:paddingVertical="7dp"
+                                    android:textSize="15sp"
+                                    android:textColor="@color/white"
+                                    android:background="@drawable/radius_10"
+                                    android:backgroundTint="@color/hint_grey"
+                                    />
+                                <View
+                                    android:layout_width="10dp"
+                                    android:layout_height="10dp"/>
+                                <TextView
+                                    android:id="@+id/confirmEditBtn"
+                                    android:layout_width="0dp"
+                                    android:layout_weight="1"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upload"
+                                    android:gravity="center"
+                                    android:paddingVertical="7dp"
+                                    android:textSize="15sp"
+                                    android:textColor="@color/white"
+                                    android:background="@drawable/radius_10"
+                                    android:backgroundTint="@color/aqua_dark"
+                                    />
+                            </LinearLayout>
+                        </LinearLayout>
                     </RelativeLayout>
                 </LinearLayout>
 
-
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/floatingEditBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    app:srcCompat="@drawable/ic_edit"
+                    android:backgroundTint="@color/orange"
+                    android:layout_margin="20dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentRight="true"
+                    />
 
                 <com.airbnb.lottie.LottieAnimationView
                     android:id="@+id/empty"
@@ -137,8 +199,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                android:background="@color/white"
-                >
+                android:background="@color/white">
 
                 <LinearLayout
                     android:id="@+id/module_spinner_layout"
@@ -166,6 +227,60 @@
                         />
                 </LinearLayout>
 
+                <LinearLayout
+                    android:id="@+id/section_spinner_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginHorizontal="20dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:background="@drawable/spinner_background">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:text="Section :"
+                        android:textSize="12sp"
+                        android:textColor="@color/hint_grey"
+                        android:alpha="0.6"
+                        android:fontFamily="@font/medium"/>
+                    <Spinner
+                        android:id="@+id/section_spinner"
+                        android:layout_width="0dp"
+                        android:layout_weight="3"
+                        android:layout_height="wrap_content"
+                        />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/group_spinner_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginHorizontal="20dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:background="@drawable/spinner_background">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:text="Group :"
+                        android:textSize="12sp"
+                        android:textColor="@color/hint_grey"
+                        android:alpha="0.6"
+                        android:fontFamily="@font/medium"/>
+                    <Spinner
+                        android:id="@+id/group_spinner"
+                        android:layout_width="0dp"
+                        android:layout_weight="3"
+                        android:layout_height="wrap_content"
+                        />
+                </LinearLayout>
+
+
+
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
@@ -188,7 +303,6 @@
 
 
             </LinearLayout>
-
         </RelativeLayout>
     </LinearLayout>
 

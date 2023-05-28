@@ -36,6 +36,7 @@ import com.codz.okah.school_grades.adapters.UserAdapter;
 import com.codz.okah.school_grades.listener.Progress;
 import com.codz.okah.school_grades.listener.StandardListener;
 import com.codz.okah.school_grades.tools.Const;
+import com.codz.okah.school_grades.tools.CustomJsonObjectRequest;
 import com.codz.okah.school_grades.tools.Functions;
 import com.codz.okah.school_grades.tools.Item;
 import com.codz.okah.school_grades.tools.User;
@@ -363,7 +364,7 @@ public class Student extends Fragment implements StandardListener {
                 if(position<=0)return;
 
                 selectedGroupPosition = parent.getSelectedItemPosition();
-                selectedSectionKey = ""+position;
+                selectedGroupKey = ""+position;
             }
 
             @Override
@@ -390,6 +391,20 @@ public class Student extends Fragment implements StandardListener {
         return mainView;
     }
 
+    private int getFacPosition(){
+        for (int i = 0; i < facs.size(); i++) {
+            if(facs.get(i).getKey().equals(Const.SELECTED_FAC_KEY))return i;
+        }
+        return -1;
+    }
+
+    private int getDepartPosition(){
+        for (int i = 0; i < departs.size(); i++) {
+            if(departs.get(i).getKey().equals(Const.USER_DATA.getDepartKey()))return i;
+        }
+        return -1;
+    }
+
 
 
 
@@ -404,7 +419,7 @@ public class Student extends Fragment implements StandardListener {
 
         AlertDialog alertDialog = dialogBuilder.create();
 
-        ((TextView) dialogView.findViewById(R.id.title)).setText("Add a Prof");
+        ((TextView) dialogView.findViewById(R.id.title)).setText("Add a Student");
 
         dialogView.findViewById(R.id.cancelBtn).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -559,8 +574,10 @@ public class Student extends Fragment implements StandardListener {
         User u = new User(userNameText, Const.STUDENT, fullNameText, selectedDepartKey);
         u.setSectionKey(selectedSectionKey);
         u.setGroup(selectedGroupPosition);
+        u.setSpecialityKey(selectedSpecialityKey);
 
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, Const.API_BASE_URL+"create_student", Functions.getUserRequestBody(u),
+
+        CustomJsonObjectRequest request = new CustomJsonObjectRequest(Request.Method.POST, Const.API_BASE_URL+"create_student", Functions.getUserRequestBody(u),
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -639,6 +656,15 @@ public class Student extends Fragment implements StandardListener {
                     };
                     facSpinner.setAdapter(facAdapter);
                     facSpinner.setSelection(0);
+
+                    Log.d("EXCEL", "fac: "+Const.SELECTED_FAC_KEY);
+                    Log.d("EXCEL", "user: "+Const.USER_DATA);
+                    if (Const.USER_DATA!=null && Const.SELECTED_FAC_KEY!=null &&
+                            (Const.USER_DATA.getUserType()==Const.ADMIN_FAC || Const.USER_DATA.getUserType()==Const.ADMIN_DEPART)){
+                        selectedFacKey = Const.SELECTED_FAC_KEY;
+                        facSpinner.setSelection(getFacPosition()+1);
+                        facSpinner.setEnabled(false);
+                    }
                 }
 
             }
@@ -682,6 +708,12 @@ public class Student extends Fragment implements StandardListener {
                 };
                 departSpinner.setAdapter(departAdapter);
                 departSpinner.setSelection(0);
+
+                if (Const.USER_DATA!=null && Const.SELECTED_FAC_KEY!=null && Const.USER_DATA.getUserType()==Const.ADMIN_DEPART){
+                    selectedDepartKey = Const.USER_DATA.getDepartKey();
+                    departSpinner.setSelection(getDepartPosition()+1);
+                    departSpinner.setEnabled(false);
+                }
 
                 mainView.findViewById(R.id.depart_spinner_layout).setVisibility(View.GONE);
                 if(!departs.isEmpty()){
@@ -804,6 +836,7 @@ public class Student extends Fragment implements StandardListener {
                     u.setKey(childSnapshot.getKey());
                     u.setGroup(childSnapshot.child("group").getValue(Integer.class));
                     u.setSectionKey(childSnapshot.child("section_key").getValue(String.class));
+                    if(childSnapshot.hasChild("speciality_key"))u.setSpecialityKey(childSnapshot.child("speciality_key").getValue(String.class));
                     students.add(u);
 
                 }

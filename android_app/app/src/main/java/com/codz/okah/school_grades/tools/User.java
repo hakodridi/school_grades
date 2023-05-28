@@ -6,8 +6,10 @@ public class User {
     private String fullName;
     private String departKey;
     private String sectionKey;
+    private String specialityKey;
     private int group;
     private String key;
+    private Grade grades;
 
     public User(String username, int userType, String fullName, String departKey) {
         this.username = username;
@@ -17,6 +19,8 @@ public class User {
         this.sectionKey = "";
         this.group = -1;
         this.key = "";
+        grades = null;
+        this.specialityKey = "";
     }
 
     public String getUsername() {
@@ -73,5 +77,21 @@ public class User {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public Grade getGrades() {
+        return grades;
+    }
+
+    public void setGrades(Grade grades) {
+        this.grades = grades;
+    }
+
+    public String getSpecialityKey() {
+        return specialityKey;
+    }
+
+    public void setSpecialityKey(String specialityKey) {
+        this.specialityKey = specialityKey;
     }
 }

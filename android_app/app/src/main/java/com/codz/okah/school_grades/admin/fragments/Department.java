@@ -25,6 +25,7 @@ import com.codz.okah.school_grades.listener.Progress;
 import com.codz.okah.school_grades.listener.StandardListener;
 import com.codz.okah.school_grades.tools.Const;
 import com.codz.okah.school_grades.tools.Item;
+import com.codz.okah.school_grades.tools.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
@@ -64,6 +65,8 @@ public class Department extends Fragment implements StandardListener {
 
     String selectedFacKey;
     int selectedFacPosition;
+
+    ArrayList<User> profs;
 
     public Department(Progress progress) {
         // Required empty public constructor
@@ -377,6 +380,17 @@ public class Department extends Fragment implements StandardListener {
                     };
                     facSpinner.setAdapter(facAdapter);
                     facSpinner.setSelection(0);
+
+
+                    Log.d("EXCEL", "fac: "+Const.SELECTED_FAC_KEY);
+                    Log.d("EXCEL", "user: "+Const.USER_DATA);
+
+                    if (Const.USER_DATA!=null && Const.SELECTED_FAC_KEY!=null && Const.USER_DATA.getUserType()==Const.ADMIN_FAC){
+                        selectedFacKey = Const.SELECTED_FAC_KEY;
+                        mainView.findViewById(R.id.chooseLayout).setVisibility(View.GONE);
+                        mainView.findViewById(R.id.floatingBtn).setVisibility(View.VISIBLE);
+                        load();
+                    }
                 }
 
             }
@@ -420,9 +434,156 @@ public class Department extends Fragment implements StandardListener {
     }
 
 
+    private void loadProfs(int position) {
+        progress.showProgress();
+        reference.child("users/profs/"+items.get(position).getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshots) {
+                profs = new ArrayList<>();
+                ArrayList<String> profList = new ArrayList<>();
+
+                for (DataSnapshot s: snapshots.getChildren()){
+                    User u = new User(
+                            s.child("username").getValue(String.class),
+                            s.child("user_type").getValue(Integer.class),
+                            s.child("fullname").getValue(String.class),
+                            s.child("depart_key").getValue(String.class)
+                    );
+                    u.setKey(s.getKey());
+                    profs.add(u);
+                    profList.add(u.getFullName());
+                }
+
+
+                openDialogSelectProf(position, profList);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void openDialogSelectProf(int position, ArrayList<String> profList) {
+        progress.hideProgress();
+        if(profs.isEmpty()){
+            Toast.makeText(getContext(), "There no profs in this depart", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
+
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_select_prof, null);
+        dialogBuilder.setView(dialogView);
+
+        AlertDialog alertDialog = dialogBuilder.create();
+
+        ArrayAdapter profAdapter;
+        Spinner profSpinner;
+        ArrayList<String> list = new ArrayList<>();
+        profSpinner = dialogView.findViewById(R.id.prof_spinner);
+        list.add("Select a choice");
+        list.addAll(profList);
+
+        profAdapter = new SpinnerAdapter(
+                getContext(),
+                R.layout.spinner_item,
+                list.toArray(new String[list.size()])){
+            @Override
+            public boolean isEnabled(int position) {
+                // Disable the hint item
+                return position != 0;
+            }
+        };
+        profSpinner.setAdapter(profAdapter);
+        profSpinner.setSelection(0);
+        if(!items.get(position).getProfID().isEmpty()){
+            profSpinner.setSelection(getProfPosition(position));
+        }
+
+        dialogView.findViewById(R.id.confirm_prof_btn).setOnClickListener(v -> {
+            if(profSpinner.getSelectedItemPosition()<1){
+                Toast.makeText(getContext(), "Selecet a choice", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            putProfToDepart(position, profs.get(profSpinner.getSelectedItemPosition()-1), alertDialog);
+        });
+
+
+        alertDialog.show();
+    }
+
+    private void putProfToDepart(int position, User prof, AlertDialog alertDialog) {
+
+
+        reference.child("users/profs")
+                .child(prof.getDepartKey())
+                .child(prof.getKey())
+                .child("user_type").setValue(Const.ADMIN_DEPART);
+
+        reference.child("users/data")
+                .child(prof.getKey())
+                .child("user_type").setValue(Const.ADMIN_DEPART);
+
+        reference.child("role_fac")
+                .child("profs")
+                .child(prof.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        try{
+                            String facKey = snapshot.getValue(String.class);
+                            if (!facKey.isEmpty()){
+                                reference.child("role_fac")
+                                        .child("profs")
+                                        .child(prof.getKey()).removeValue();
+                                reference.child("role_fac")
+                                        .child("facs")
+                                        .child(facKey).removeValue();
+                            }
+                        }catch (Exception e){
+
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
+
+        reference.child("role_depart")
+                .child("profs")
+                .child(prof.getKey())
+                .setValue(items.get(position).getKey());
+
+        reference.child("role_depart")
+                .child("departs")
+                .child(items.get(position).getKey())
+                .setValue(prof.getKey());
+
+        progress.hideProgress();
+        alertDialog.dismiss();
+
+
+
+    }
+
+    private int getProfPosition(int itemPosition) {
+        for (int i = 0; i < profs.size(); i++) {
+            if(profs.get(i).getKey().equals(items.get(itemPosition).getProfID())){
+                return i+1;
+            }
+        }
+        return 0;
+    }
+
+
     @Override
     public void onClick(int position) {
-
+        loadProfs(position);
     }
 
     @Override

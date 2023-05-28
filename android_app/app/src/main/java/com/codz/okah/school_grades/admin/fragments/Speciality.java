@@ -421,6 +421,20 @@ public class Speciality extends Fragment implements StandardListener {
 
 
 
+    private int getFacPosition(){
+        for (int i = 0; i < facs.size(); i++) {
+            if(facs.get(i).getKey().equals(Const.SELECTED_FAC_KEY))return i;
+        }
+        return -1;
+    }
+
+    private int getDepartPosition(){
+        for (int i = 0; i < departs.size(); i++) {
+            if(departs.get(i).getKey().equals(Const.USER_DATA.getDepartKey()))return i;
+        }
+        return -1;
+    }
+
 
 
     private void loadFacs() {
@@ -461,6 +475,15 @@ public class Speciality extends Fragment implements StandardListener {
                     };
                     facSpinner.setAdapter(facAdapter);
                     facSpinner.setSelection(0);
+
+                    Log.d("EXCEL", "fac: "+Const.SELECTED_FAC_KEY);
+                    Log.d("EXCEL", "user: "+Const.USER_DATA);
+                    if (Const.USER_DATA!=null && Const.SELECTED_FAC_KEY!=null &&
+                            (Const.USER_DATA.getUserType()==Const.ADMIN_FAC || Const.USER_DATA.getUserType()==Const.ADMIN_DEPART)){
+                        selectedFacKey = Const.SELECTED_FAC_KEY;
+                        facSpinner.setSelection(getFacPosition()+1);
+                        facSpinner.setEnabled(false);
+                    }
                 }
 
             }
@@ -509,6 +532,13 @@ public class Speciality extends Fragment implements StandardListener {
                 departSpinner.setAdapter(departAdapter);
                 departSpinner.setSelection(0);
                 levelSpinner.setSelection(0);
+
+
+                if (Const.USER_DATA!=null && Const.SELECTED_FAC_KEY!=null && Const.USER_DATA.getUserType()==Const.ADMIN_DEPART){
+                    selectedDepartKey = Const.USER_DATA.getDepartKey();
+                    departSpinner.setSelection(getDepartPosition()+1);
+                    departSpinner.setEnabled(false);
+                }
 
                 mainView.findViewById(R.id.level_spinner_layout).setVisibility(View.GONE);
                 if(departs.isEmpty()){

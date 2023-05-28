@@ -2,8 +2,8 @@ package com.codz.okah.school_grades.tools;
 
 public class Const {
 
-//    public static final String API_BASE_URL = "http://192.168.100.125:7766/";
-    public static final String API_BASE_URL = "http://10.10.8.175:7766/";
+    public static final String API_BASE_URL = "http://192.168.100.125:7766/";
+//    public static final String API_BASE_URL = "http://10.10.8.175:7766/";
 
     public static final int READ_REQUEST_CODE        = 99;
 
@@ -24,6 +24,7 @@ public class Const {
     public static final int ADMIN_DEPART        = 103;
     public static final int PROF                = 104;
     public static final int STUDENT             = 105;
+    public static final int SCOLARITY           = 106;
 
     public static final String[] LEVELS = {
             "L1",
@@ -34,4 +35,8 @@ public class Const {
     };
 
     public static final String EMAIL_COMPLETE = "@univ-biskra.dz";
+
+
+    public static User USER_DATA = null;
+    public static String SELECTED_FAC_KEY = null;
 }

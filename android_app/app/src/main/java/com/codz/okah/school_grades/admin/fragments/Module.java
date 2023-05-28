@@ -26,6 +26,7 @@ import com.codz.okah.school_grades.listener.Progress;
 import com.codz.okah.school_grades.listener.StandardListener;
 import com.codz.okah.school_grades.tools.Const;
 import com.codz.okah.school_grades.tools.Item;
+import com.codz.okah.school_grades.tools.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
@@ -70,8 +71,11 @@ public class Module extends Fragment implements StandardListener {
     int selectedLevelPosition;
     int selectedSpecialityPosition;
 
+    ArrayList<User> profs;
+    ArrayList<String> profList;
+
+
     public Module(Progress progress) {
-        // Required empty public constructor
         this.progress = progress;
     }
 
@@ -262,7 +266,7 @@ public class Module extends Fragment implements StandardListener {
                 selectedFacKey = facs.get(selectedFacPosition-1).getKey();
                 mainView.findViewById(R.id.chooseLayout).setVisibility(View.GONE);
                 progress.showProgress();
-                load();
+                loadProfs();
             }
         });
 
@@ -271,7 +275,52 @@ public class Module extends Fragment implements StandardListener {
         return mainView;
     }
 
+    private int getFacPosition(){
+        for (int i = 0; i < facs.size(); i++) {
+            if(facs.get(i).getKey().equals(Const.SELECTED_FAC_KEY))return i;
+        }
+        return -1;
+    }
 
+    private int getDepartPosition(){
+        for (int i = 0; i < departs.size(); i++) {
+            if(departs.get(i).getKey().equals(Const.USER_DATA.getDepartKey()))return i;
+        }
+        return -1;
+    }
+
+    private void loadProfs() {
+        progress.showProgress();
+        reference.child("users/profs/"+selectedDepartKey).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                profs = new ArrayList<>();
+                profList = new ArrayList<>();
+                for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+
+                    User u = new User(
+                            childSnapshot.child("username").getValue(String.class),
+                            childSnapshot.child("user_type").getValue(Integer.class),
+                            childSnapshot.child("fullname").getValue(String.class),
+                            childSnapshot.child("depart_key").getValue(String.class)
+                    );
+                    u.setKey(childSnapshot.getKey());
+                    profs.add(u);
+                    profList.add(childSnapshot.child("fullname").getValue(String.class));
+
+                }
+                load();
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                progress.hideProgress();
+                Log.e("EXP_ERR", "onCancelled: "+databaseError.getMessage()+"\n"+databaseError.getDetails() );
+                // Handle database error
+            }
+        });
+    }
 
 
     @SuppressLint("MissingInflatedId")
@@ -369,7 +418,14 @@ public class Module extends Fragment implements StandardListener {
         alertDialog.show();
     }
 
+
+
     private void openDialogSelectProf(int position) {
+        if(profs.isEmpty()){
+            Toast.makeText(getContext(), "There no profs in this depart", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
 
         LayoutInflater inflater = this.getLayoutInflater();
@@ -378,10 +434,83 @@ public class Module extends Fragment implements StandardListener {
 
         AlertDialog alertDialog = dialogBuilder.create();
 
+        ArrayAdapter profAdapter;
+        Spinner profSpinner;
+        ArrayList<String> list = new ArrayList<>();
+        profSpinner = dialogView.findViewById(R.id.prof_spinner);
+        list.add("Select a choice");
+        list.addAll(profList);
+
+        profAdapter = new SpinnerAdapter(
+                getContext(),
+                R.layout.spinner_item,
+                list.toArray(new String[list.size()])){
+            @Override
+            public boolean isEnabled(int position) {
+                // Disable the hint item
+                return position != 0;
+            }
+        };
+        profSpinner.setAdapter(profAdapter);
+        profSpinner.setSelection(0);
+        if(!items.get(position).getProfID().isEmpty()){
+            profSpinner.setSelection(getProfPosition(position));
+        }
+
+        dialogView.findViewById(R.id.confirm_prof_btn).setOnClickListener(v -> {
+            if(profSpinner.getSelectedItemPosition()<1){
+                Toast.makeText(getContext(), "Selecet a choice", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            putProfToModule(position, profs.get(profSpinner.getSelectedItemPosition()-1), alertDialog);
+        });
 
 
         alertDialog.show();
     }
+
+    private void putProfToModule(int position, User prof, AlertDialog alertDialog) {
+        progress.showProgress();
+
+        reference.child("struct/modules/"+selectedSpecialityKey+"/"+items.get(position).getKey()+"/prof_id").setValue(prof.getKey(), new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                progress.hideProgress();
+                if (databaseError != null) {
+                    Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
+                } else {
+                    alertDialog.dismiss();
+                    Toast.makeText(getContext(), "Prof Selected", Toast.LENGTH_SHORT).show();
+                    putProfRole(position, prof);
+                    load();
+                }
+            }
+        });
+
+    }
+
+    private void putProfRole(int position, User prof) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("module", items.get(position));
+        map.put("speciality_key", selectedSpecialityKey);
+        map.put("fac_key", selectedFacKey);
+        map.put("depart_key", selectedDepartKey);
+
+        reference.child("prof_modules")
+                .child(prof.getKey())
+                .child(items.get(position).getKey())
+                .setValue(map);
+    }
+
+    private int getProfPosition(int itemPosition) {
+        for (int i = 0; i < profs.size(); i++) {
+            if(profs.get(i).getKey().equals(items.get(itemPosition).getProfID())){
+                return i+1;
+            }
+        }
+        return 0;
+    }
+
 
     private void deleteFromDialog(int position,AlertDialog alertDialog){
 
@@ -517,6 +646,15 @@ public class Module extends Fragment implements StandardListener {
                     };
                     facSpinner.setAdapter(facAdapter);
                     facSpinner.setSelection(0);
+
+                    Log.d("EXCEL", "fac: "+Const.SELECTED_FAC_KEY);
+                    Log.d("EXCEL", "user: "+Const.USER_DATA);
+                    if (Const.USER_DATA!=null && Const.SELECTED_FAC_KEY!=null &&
+                            (Const.USER_DATA.getUserType()==Const.ADMIN_FAC || Const.USER_DATA.getUserType()==Const.ADMIN_DEPART)){
+                        selectedFacKey = Const.SELECTED_FAC_KEY;
+                        facSpinner.setSelection(getFacPosition()+1);
+                        facSpinner.setEnabled(false);
+                    }
                 }
 
             }
@@ -564,6 +702,12 @@ public class Module extends Fragment implements StandardListener {
                 departSpinner.setAdapter(departAdapter);
                 departSpinner.setSelection(0);
                 levelSpinner.setSelection(0);
+
+                if (Const.USER_DATA!=null && Const.SELECTED_FAC_KEY!=null && Const.USER_DATA.getUserType()==Const.ADMIN_DEPART){
+                    selectedDepartKey = Const.USER_DATA.getDepartKey();
+                    departSpinner.setSelection(getDepartPosition()+1);
+                    departSpinner.setEnabled(false);
+                }
 
                 mainView.findViewById(R.id.level_spinner_layout).setVisibility(View.GONE);
                 if(departs.isEmpty()){

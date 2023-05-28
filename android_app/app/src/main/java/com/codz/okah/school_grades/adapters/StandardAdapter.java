@@ -1,10 +1,12 @@
 package com.codz.okah.school_grades.adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -69,7 +71,7 @@ public class StandardAdapter extends RecyclerView.Adapter<StandardAdapter.Standa
             number = itemView.findViewById(R.id.number);
             number_end = itemView.findViewById(R.id.number_end);
 
-            itemView.setOnClickListener(new View.OnClickListener() {
+            itemView.findViewById(R.id.drag_item).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     listener.onClick(getAdapterPosition());

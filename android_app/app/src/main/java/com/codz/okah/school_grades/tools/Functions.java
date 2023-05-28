@@ -12,6 +12,7 @@ public class Functions {
             requestBody.put("username", user.getUsername());
             requestBody.put("password", "password123");
             requestBody.put("user_type", user.getUserType());
+            requestBody.put("speciality_key", user.getSpecialityKey());
             requestBody.put("depart_key", user.getDepartKey());
             requestBody.put("section_key", user.getSectionKey());
             requestBody.put("group", user.getGroup());

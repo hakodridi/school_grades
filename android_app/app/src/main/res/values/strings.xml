@@ -14,8 +14,6 @@
     <string name="open" translatable="false">Open navigation drawer</string>
     <string name="close" translatable="false">Close navigation drawer</string>
     <string name="spinner_hint" translatable="false">Select a choice</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>

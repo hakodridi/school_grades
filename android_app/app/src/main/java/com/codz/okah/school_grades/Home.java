@@ -21,13 +21,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.codz.okah.school_grades.R;
+import com.codz.okah.school_grades.adapters.AdsAdapter;
 import com.codz.okah.school_grades.adapters.GradeAdapter;
 import com.codz.okah.school_grades.adapters.SpinnerAdapter;
 import com.codz.okah.school_grades.admin.ProfHome;
+import com.codz.okah.school_grades.admin.ScolarityHome;
+import com.codz.okah.school_grades.tools.Ad;
 import com.codz.okah.school_grades.tools.Grade;
 import com.codz.okah.school_grades.tools.Item;
 import com.codz.okah.school_grades.tools.Module;
 import com.codz.okah.school_grades.tools.User;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -35,8 +40,14 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 
 public class Home extends AppCompatActivity {
 
@@ -45,6 +56,10 @@ public class Home extends AppCompatActivity {
     ArrayList<User> students;
     DatabaseReference reference;
     GradeAdapter adapter;
+
+    AdsAdapter adsAdapter;
+    ArrayList<Ad> ads;
+    RecyclerView adsListView;
 
     Spinner moduleSpinner;
     ArrayAdapter moduleAdapter;
@@ -69,6 +84,7 @@ public class Home extends AppCompatActivity {
 
         empty = findViewById(R.id.empty);
         listView = findViewById(R.id.listView);
+        adsListView = findViewById(R.id.ads_listView);
         reference = FirebaseDatabase.getInstance().getReference();
 
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -87,6 +103,10 @@ public class Home extends AppCompatActivity {
         students = new ArrayList<>();
         adapter = new GradeAdapter(this, new ArrayList<>());
         listView.setAdapter(adapter);
+
+        ads = new ArrayList<>();
+        adsAdapter = new AdsAdapter(ads);
+        adsListView.setAdapter(adsAdapter);
 
         moduleSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -115,6 +135,30 @@ public class Home extends AppCompatActivity {
             }
         });
 
+        findViewById(R.id.notif_btn).setOnClickListener(v->{
+            if(findViewById(R.id.notif_layout).getVisibility()==View.VISIBLE)
+                hideNotifLayout();
+            else showNotifLayout();
+        });
+
+        hideNotifLayout();
+
+
+
+
+
+
+    }
+
+    private void showNotifLayout(){
+        findViewById(R.id.notif_badge).setVisibility(View.GONE);
+        findViewById(R.id.notif_layout).setVisibility(View.VISIBLE);
+        findViewById(R.id.notif_play).setVisibility(View.VISIBLE);
+    }
+
+    private void hideNotifLayout(){
+        findViewById(R.id.notif_layout).setVisibility(View.GONE);
+        findViewById(R.id.notif_play).setVisibility(View.GONE);
     }
 
 
@@ -138,7 +182,23 @@ public class Home extends AppCompatActivity {
                         userData.setSpecialityKey(snapshot.child("speciality_key").getValue(String.class));
                         Log.d("EXCEL", "onDataChange: userDATA : "+snapshot.child("speciality_key").getValue(String.class));
                         loadModules();
+                        loadAds();
                         hideProgress();
+
+                        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
+                            @Override
+                            public void onComplete(@NonNull Task<String> task) {
+                                if(!task.isSuccessful()){
+                                    Log.d("EXCEL_ERR", "onComplete: error");
+                                    return;
+                                }
+
+                                Log.d("EXCEL_ERR", "onComplete: "+task.getResult());
+
+                                reference.child("tokens/"+userData.getDepartKey())
+                                        .child(currentUser.getUid()).setValue(task.getResult());
+                            }
+                        });
                     }
 
                     @Override
@@ -294,6 +354,54 @@ public class Home extends AppCompatActivity {
 
 
 
+    private void loadAds() {
+        showProgress();
+        reference.child("ads/"+userData.getDepartKey()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshots) {
+                ads = new ArrayList<>();
+                for(DataSnapshot snapshot: snapshots.getChildren()){
+                    ads.add(snapshot.getValue(Ad.class));
+                }
+
+                Collections.sort(ads, new Comparator<Ad>() {
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm");
+
+                    @Override
+                    public int compare(Ad ad1, Ad ad2) {
+                        try {
+                            Date date1 = dateFormat.parse(ad1.getDate());
+                            Date date2 = dateFormat.parse(ad2.getDate());
+                            return date2.compareTo(date1);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        return 0;
+                    }
+                });
+
+
+                adsAdapter.setAds(ads);
+                hideProgress();
+
+                findViewById(R.id.empty_ads).setVisibility(ads.isEmpty()?View.VISIBLE:View.GONE);
+
+                if(findViewById(R.id.notif_layout).getVisibility()==View.GONE)
+                    findViewById(R.id.notif_badge).setVisibility(View.VISIBLE);
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(Home.this, "Error", Toast.LENGTH_SHORT).show();
+                hideProgress();
+            }
+        });
+    }
+
+
+
 
 
 
@@ -333,6 +441,7 @@ public class Home extends AppCompatActivity {
             return true;
         }
 
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -361,5 +470,14 @@ public class Home extends AppCompatActivity {
         FirebaseAuth.getInstance().signOut();
         startActivity(new Intent(Home.this, Login.class));
         finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(findViewById(R.id.notif_layout).getVisibility()==View.VISIBLE){
+            hideNotifLayout();
+            return;
+        }
+        super.onBackPressed();
     }
 }

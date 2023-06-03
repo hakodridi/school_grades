@@ -8,9 +8,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Window;
+import android.widget.Toast;
 
 import com.codz.okah.school_grades.admin.MainNavigation;
 import com.codz.okah.school_grades.admin.ProfHome;
+import com.codz.okah.school_grades.admin.ScolarityHome;
 import com.codz.okah.school_grades.tools.Const;
 import com.codz.okah.school_grades.tools.User;
 import com.google.firebase.auth.FirebaseAuth;
@@ -63,6 +65,7 @@ public class SplashScreen extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 User userData;
                 if(snapshot.hasChildren()){
+                    Log.d("EXCEL_ERR", "im in");
                     userData = new User(
                             snapshot.child("username").getValue(String.class),
                             snapshot.child("user_type").getValue(Integer.class),
@@ -70,6 +73,7 @@ public class SplashScreen extends AppCompatActivity {
                             snapshot.child("depart_key").getValue(String.class)
                     );
                     userData.setKey(user.getUid());
+
 
                     switch (userData.getUserType()){
                         case Const.PROF:
@@ -81,6 +85,8 @@ public class SplashScreen extends AppCompatActivity {
                             finish();
                             break;
                         case Const.SCOLARITY:
+                            startActivity(new Intent(SplashScreen.this, ScolarityHome.class));
+                            finish();
                             break;
                         default:
                             startActivity(new Intent(SplashScreen.this, MainNavigation.class));

@@ -18,12 +18,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.codz.okah.school_grades.Login;
 import com.codz.okah.school_grades.R;
@@ -37,6 +35,7 @@ import com.codz.okah.school_grades.admin.fragments.Speciality;
 import com.codz.okah.school_grades.admin.fragments.Student;
 import com.codz.okah.school_grades.listener.Progress;
 import com.codz.okah.school_grades.tools.Const;
+import com.codz.okah.school_grades.admin.fragments.Scolarity;
 import com.codz.okah.school_grades.tools.User;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -122,6 +121,8 @@ public class MainNavigation extends AppCompatActivity implements Progress {
                         loadFacKeyForFacAdmin();
                         break;
                     case Const.ADMIN_DEPART:
+                        navigationView.getMenu().findItem(R.id.menu_scolarity).setVisible(true);
+
                         navigationView.getMenu().findItem(R.id.menu_facs).setVisible(false);
                         navigationView.getMenu().findItem(R.id.menu_departs).setVisible(false);
 
@@ -140,6 +141,8 @@ public class MainNavigation extends AppCompatActivity implements Progress {
         getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout,
                 Objects.requireNonNull(new Faculty(MainNavigation.this))).commit();
         navigationView.setCheckedItem(R.id.menu_facs);
+
+        navigationView.getMenu().findItem(R.id.menu_scolarity).setVisible(false);
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -164,6 +167,9 @@ public class MainNavigation extends AppCompatActivity implements Progress {
                     case R.id.menu_profs:
                         fragment = new Prof(MainNavigation.this);
                         break;
+                    case R.id.menu_scolarity:
+                        fragment = new Scolarity(MainNavigation.this);
+                        break;
                     case R.id.menu_students:
                         fragment = new Student(MainNavigation.this);
                         break;
@@ -185,6 +191,8 @@ public class MainNavigation extends AppCompatActivity implements Progress {
         findViewById(R.id.logoutBtn).setOnClickListener(v -> {
             confirmLogout();
         });
+
+
 
     }
 

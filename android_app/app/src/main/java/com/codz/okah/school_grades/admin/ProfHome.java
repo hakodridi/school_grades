@@ -27,6 +27,7 @@ import com.codz.okah.school_grades.R;
 import com.codz.okah.school_grades.adapters.EditGradeAdapter;
 import com.codz.okah.school_grades.adapters.GradeAdapter;
 import com.codz.okah.school_grades.adapters.SpinnerAdapter;
+import com.codz.okah.school_grades.tools.Functions;
 import com.codz.okah.school_grades.tools.Grade;
 import com.codz.okah.school_grades.tools.Item;
 import com.codz.okah.school_grades.tools.Module;
@@ -187,6 +188,8 @@ public class ProfHome extends AppCompatActivity {
                         } else {
                             Toast.makeText(ProfHome.this, "Grades added", Toast.LENGTH_SHORT).show();
                             loadStudents();
+                            Functions.pushNotif(ProfHome.this, modules.get(0).getDepartKey(), "Grades"
+                                    , currentUser.getDisplayName()+" : "+ modules.get(moduleSpinner.getSelectedItemPosition()-1).getModule().getValue());
                         }
                     }
                 });

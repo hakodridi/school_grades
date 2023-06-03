@@ -8,6 +8,7 @@ from firebase_admin import exceptions as firebase_exceptions
 import pandas as pd
 import os
 from pprint import pprint
+from firebase_admin import messaging
 
 # Initialize Firebase
 cred = credentials.Certificate("./affichage-2d87a-firebase-adminsdk-q8ift-72f086273a.json")
@@ -133,4 +134,84 @@ def create_prof(user: UserCreate):
         print(f"error_2 : {e}")
         return {"error": f"Failed to save user data\n{e}", "message":""}
 
- 
+
+@app.post("/create_scolarity_user")
+def create_scolarity_user(user: UserCreate):
+    try:
+        # Create account with Firebase Authentication
+        userAuth = auth.create_user(
+            email=user.username+"@univ-biskra.dz",
+            password=user.password,
+            display_name=user.fullname,
+            email_verified=False
+        )
+        
+        # Save user data to the Firebase Realtime Database
+        user_data = {
+            'fullname': user.fullname,
+            'username': user.username,
+            'user_type': user.user_type,
+            'depart_key': user.depart_key,
+            'section_key': user.section_key,
+            'group': user.group
+        }
+
+        db.reference('scolarity').child(user.depart_key).set(userAuth.uid)
+        db.reference('users/data').child(userAuth.uid).set(user_data)
+
+        print("created")
+        return {"message": "User created successfully", "error":""}
+    except ValueError as e:
+        print(f"error : {e}")
+        return {"error": f"Failed to create user\n{e}", "message":""}
+
+    except firebase_exceptions.FirebaseError as e:
+        print(f"error_2 : {e}")
+        return {"error": f"Failed to save user data\n{e}", "message":""}
+
+
+
+
+
+def retrieve_tokens(depart_key):
+    ref = db.reference('tokens').child(depart_key)
+    tokens_snapshot = ref.get()
+
+    # Extract the tokens from the snapshot
+    tokens = []
+    if tokens_snapshot:
+        tokens = list(tokens_snapshot.values())
+
+    return tokens
+
+
+
+def send_notification_to_tokens(tokens, title_, body_):
+    message = messaging.MulticastMessage(
+        notification=messaging.Notification(
+            title=title_,
+            body=body_
+        ),
+        tokens=tokens,
+    )
+    response = messaging.send_multicast(message)
+    print('Notification sent:', response.success_count, 'successful')
+
+
+
+@app.post("/push_notification/")
+async def push_notification(notification_data: dict):
+    # Retrieve all the tokens
+    tokens = retrieve_tokens(notification_data.get("depart_key"))
+
+    title = notification_data.get('title')
+    body = notification_data.get('body')
+    pprint(notification_data)
+
+    # Send push notifications to the tokens
+    send_notification_to_tokens(tokens, title, body)
+
+    return {"message" : "sent"}
+
+    
+    

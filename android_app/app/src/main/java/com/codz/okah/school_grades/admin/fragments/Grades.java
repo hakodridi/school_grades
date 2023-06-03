@@ -26,6 +26,7 @@ import com.codz.okah.school_grades.adapters.UserAdapter;
 import com.codz.okah.school_grades.admin.ProfHome;
 import com.codz.okah.school_grades.listener.Progress;
 import com.codz.okah.school_grades.tools.Const;
+import com.codz.okah.school_grades.tools.Functions;
 import com.codz.okah.school_grades.tools.Grade;
 import com.codz.okah.school_grades.tools.Item;
 import com.codz.okah.school_grades.tools.Module;
@@ -236,6 +237,8 @@ public class Grades extends Fragment {
                         } else {
                             Toast.makeText(getContext(), "Grades added", Toast.LENGTH_SHORT).show();
                             loadStudents();
+                            Functions.pushNotif(getContext(), modules.get(0).getDepartKey(), "Grades"
+                                    , currentUser.getDisplayName()+" : "+ modules.get(moduleSpinner.getSelectedItemPosition()-1).getModule().getValue());
                         }
                     }
                 });

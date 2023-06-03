@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.codz.okah.school_grades.admin.MainNavigation;
 import com.codz.okah.school_grades.admin.ProfHome;
+import com.codz.okah.school_grades.admin.ScolarityHome;
 import com.codz.okah.school_grades.tools.Const;
 import com.codz.okah.school_grades.tools.User;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -113,6 +114,7 @@ public class Login extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 User userData;
                 if(snapshot.hasChildren()){
+
                     userData = new User(
                             snapshot.child("username").getValue(String.class),
                             snapshot.child("user_type").getValue(Integer.class),
@@ -120,6 +122,7 @@ public class Login extends AppCompatActivity {
                             snapshot.child("depart_key").getValue(String.class)
                     );
                     userData.setKey(user.getUid());
+
 
                     switch (userData.getUserType()){
                         case Const.PROF:
@@ -131,6 +134,8 @@ public class Login extends AppCompatActivity {
                             finish();
                             break;
                         case Const.SCOLARITY:
+                            startActivity(new Intent(Login.this, ScolarityHome.class));
+                            finish();
                             break;
                         default:
                             startActivity(new Intent(Login.this, MainNavigation.class));

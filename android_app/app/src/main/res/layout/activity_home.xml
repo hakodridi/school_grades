@@ -17,7 +17,44 @@
             android:background="?attr/colorPrimary"
             android:elevation="4dp"
             android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-            app:title="@string/app_name" />
+            app:title="@string/app_name"
+            app:titleTextColor="@color/dark_grey">
+            <RelativeLayout
+                android:layout_width="24dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="end"
+                android:layout_marginEnd="10dp">
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true">
+                    <ImageView
+                        android:id="@+id/notif_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_notif"
+                        app:tint="@color/dark_grey"
+                        android:foregroundGravity="center"
+                        />
+                    <RelativeLayout
+                        android:id="@+id/notif_badge"
+                        android:layout_width="7dp"
+                        android:layout_height="7dp"
+                        android:background="@drawable/circlar_gradien_green"
+                        android:backgroundTint="#FF0000"
+                        android:layout_alignParentEnd="true"/>
+                </RelativeLayout>
+                <ImageView
+                    android:id="@+id/notif_play"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_play"
+                    android:rotation="-90"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginBottom="-10dp"
+                    />
+            </RelativeLayout>
+        </androidx.appcompat.widget.Toolbar>
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -112,6 +149,7 @@
                             android:layout_height="match_parent"
                             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                             />
+
                     </RelativeLayout>
                 </LinearLayout>
 
@@ -189,6 +227,27 @@
 
             </LinearLayout>
 
+            <RelativeLayout
+                android:id="@+id/notif_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/white">
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/ads_listView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    />
+                <TextView
+                    android:id="@+id/empty_ads"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="There is no ads"
+                    android:layout_centerInParent="true"
+                    android:textColor="@color/dark_grey"
+                    android:textSize="16sp"/>
+            </RelativeLayout>
+
         </RelativeLayout>
     </LinearLayout>
 
@@ -205,5 +264,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"/>
     </RelativeLayout>
+
+
 
 </RelativeLayout>

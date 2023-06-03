@@ -434,6 +434,8 @@ public class Faculty extends Fragment {
             return;
         }
 
+
+
         progress.showProgress();
         alertDialog.dismiss();
 

@@ -30,6 +30,11 @@
             android:iconTint="@color/hint_grey"
             android:title="Profs"/>
 
+        <item android:id="@+id/menu_scolarity"
+            android:icon="@drawable/ic_scolarity_user"
+            android:iconTint="@color/hint_grey"
+            android:title="Scolarity"/>
+
         <item android:id="@+id/menu_students"
             android:icon="@drawable/ic_student"
             android:iconTint="@color/hint_grey"
@@ -42,5 +47,6 @@
 
 
     </group>
+
 
 </menu>
